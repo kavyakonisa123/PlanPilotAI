@@ -62,7 +62,7 @@ AI Service / LLM API
  v
 Database
 ```
-Application Flow
+## Application Flow
 
 1. User enters travel details in the frontend.
 2. Frontend sends the request to the FastAPI backend.
@@ -73,8 +73,7 @@ Application Flow
 7. User can optionally save the itinerary in the database.
 
 
-
-Learning Goals
+## Learning Goals
 
 By building this project, I aim to learn and practice:
 
@@ -92,7 +91,7 @@ By building this project, I aim to learn and practice:
 
 ⸻
 
-Future Improvements
+## Future Improvements
 
 * User authentication
 * Save previous travel plans
@@ -106,6 +105,6 @@ Future Improvements
 
 ⸻
 
-Project Status
+## Project Status
 
 Current Status: Day 1 — Project scope and architecture defined with git setup
