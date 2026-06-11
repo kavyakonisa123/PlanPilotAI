@@ -61,7 +61,7 @@ AI Service / LLM API
  |
  v
 Database
-
+```
 Application Flow
 
 1. User enters travel details in the frontend.
