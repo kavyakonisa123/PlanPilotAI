@@ -102,7 +102,7 @@ Database
 
 ## Day 2 Frontend Setup
 
-Day 2 adds a working frontend foundation using Next.js, TypeScript, and Tailwind CSS.
+Day 2 adds a working frontend foundation in the `frontend/` folder using Next.js, TypeScript, and Tailwind CSS.
 
 Included pages:
 
@@ -124,11 +124,39 @@ Included concepts:
 
 ---
 
+## Day 3 Backend Setup
+
+Day 3 adds a starter FastAPI backend in the `backend/` folder.
+
+Included routes:
+
+- `GET /health`
+- `GET /api/trips`
+- `POST /api/trips`
+- `GET /api/trips/{trip_id}`
+- `POST /api/generate-itinerary`
+- `GET /api/destinations`
+- `GET /api/travel-styles`
+
+Run the backend:
+
+```bash
+python3 -m venv backend/.venv
+source backend/.venv/bin/activate
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --reload --port 8000
+```
+
+Open [http://localhost:8000/docs](http://localhost:8000/docs) to test the API.
+
+---
+
 ## Running Locally
 
 Install dependencies:
 
 ```bash
+cd frontend
 npm install
 ```
 
@@ -138,7 +166,15 @@ Start the development server:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app.
+Open [http://localhost:2000](http://localhost:2000) to view the app.
+
+In a second terminal, start the backend from the project root:
+
+```bash
+uvicorn backend.main:app --reload --port 8000
+```
+
+Open [http://localhost:8000/docs](http://localhost:8000/docs) to view the API docs.
 
 ---
 
@@ -180,4 +216,4 @@ By building this project, I aim to learn and practice:
 
 Day 1 — Project scope and architecture defined with git setup
 
-Current Status: Day 2 - Frontend foundation created with Next.js, TypeScript, Tailwind CSS, routing, layout, and starter pages.
+Current Status: Day 3 - FastAPI backend foundation created with health checks, trip routes, and a mock itinerary generator.
