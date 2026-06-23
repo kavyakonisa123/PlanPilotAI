@@ -1,0 +1,70 @@
+erDiagram
+    USERS ||--o{ TRIPS : owns
+    USERS ||--|| PREFERENCES : has
+    TRIPS ||--o{ ITINERARIES : contains
+    ITINERARIES ||--o{ ACTIVITIES : includes
+
+    USERS {
+        uuid id PK
+        string email UK
+        string full_name
+        string auth_provider
+        uuid auth_user_id UK
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    TRIPS {
+        uuid id PK
+        uuid user_id FK
+        string destination
+        date start_date
+        date end_date
+        string budget
+        string travel_style
+        enum status
+        text notes
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    ITINERARIES {
+        uuid id PK
+        uuid trip_id FK
+        int day_number
+        string title
+        text summary
+        text travel_tip
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    ACTIVITIES {
+        uuid id PK
+        uuid itinerary_id FK
+        string title
+        text description
+        enum category
+        string location_name
+        string address
+        string start_time
+        string end_time
+        int estimated_cost
+        int sort_order
+        string source
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    PREFERENCES {
+        uuid id PK
+        uuid user_id FK
+        string default_budget
+        string default_travel_style
+        jsonb interests
+        jsonb dietary_needs
+        jsonb accessibility_needs
+        string home_airport
+        timestamptz created_at
+        timestamptz updated_at
+    }

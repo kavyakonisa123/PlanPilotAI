@@ -51,7 +51,8 @@ PlanPilotAI simplifies this process by allowing users to enter basic travel deta
 
 ### Database
 
-- MongoDB or PostgreSQL
+- PostgreSQL
+- Supabase for hosted Postgres and future authentication
 
 ### Tools
 
@@ -151,6 +152,37 @@ Open [http://localhost:8000/docs](http://localhost:8000/docs) to test the API.
 
 ---
 
+## Day 5 Database Schema
+
+Day 5 adds the first PostgreSQL schema for saved travel plans.
+
+Included tables:
+
+- `users`
+- `trips`
+- `itineraries`
+- `activities`
+- `preferences`
+
+Included database tooling:
+
+- SQLAlchemy models in [backend/models.py](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/backend/models.py)
+- Database session setup in [backend/database.py](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/backend/database.py)
+- Alembic configuration in [alembic.ini](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/alembic.ini)
+- Initial migration in [20260618_0001_create_travel_planning_schema.py](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/backend/alembic/versions/20260618_0001_create_travel_planning_schema.py)
+- ER diagram in [day-5-er-diagram.mmd](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/docs/day-5-er-diagram.mmd)
+- Schema notes in [day-5-database-schema.md](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/docs/day-5-database-schema.md)
+
+Run migrations:
+
+```bash
+source backend/.venv/bin/activate
+export DATABASE_URL="postgresql+psycopg://postgres:YOUR_PASSWORD@YOUR_HOST:5432/postgres"
+alembic upgrade head
+```
+
+---
+
 ## Running Locally
 
 Install dependencies:
@@ -216,4 +248,4 @@ By building this project, I aim to learn and practice:
 
 Day 1 — Project scope and architecture defined with git setup
 
-Current Status: Day 3 - FastAPI backend foundation created with health checks, trip routes, and a mock itinerary generator.
+Current Status: Day 5 - PostgreSQL schema, SQLAlchemy models, Alembic migration, ER diagram, and database setup blogs added.

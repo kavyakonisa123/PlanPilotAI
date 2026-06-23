@@ -1,6 +1,10 @@
 # PlanPilotAI FastAPI Backend
 
-Day 3 adds a starter FastAPI backend for the travel planner.
+The backend is a FastAPI API for generating and saving travel itineraries.
+
+Day 3 added the starter API routes and mock itinerary generator.
+
+Day 5 adds PostgreSQL database support with SQLAlchemy and Alembic.
 
 ## Setup
 
@@ -30,4 +34,40 @@ Open the API docs at [http://localhost:8000/docs](http://localhost:8000/docs).
 - `GET /api/destinations`
 - `GET /api/travel-styles`
 
-The itinerary generator currently returns structured mock data. Later it can call an AI provider and save trips to a real database.
+The itinerary generator currently returns structured mock data. Later it can call an AI provider and save trips to the database.
+
+## Database
+
+Recommended hosted database: Supabase Postgres.
+
+Set the database URL:
+
+```bash
+export DATABASE_URL="postgresql+psycopg://postgres:YOUR_PASSWORD@YOUR_HOST:5432/postgres"
+```
+
+Run migrations:
+
+```bash
+alembic upgrade head
+```
+
+Create a new migration after editing models:
+
+```bash
+alembic revision --autogenerate -m "describe the schema change"
+```
+
+## Schema
+
+Main tables:
+
+- `users`
+- `trips`
+- `itineraries`
+- `activities`
+- `preferences`
+
+The schema is defined in [models.py](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/backend/models.py).
+
+The initial migration is in [20260618_0001_create_travel_planning_schema.py](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/backend/alembic/versions/20260618_0001_create_travel_planning_schema.py).

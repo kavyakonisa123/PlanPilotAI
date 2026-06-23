@@ -1,0 +1,5 @@
+Alembic migrations for the PlanPilotAI backend.
+
+Run from the project root:
+
+    alembic upgrade head
