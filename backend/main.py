@@ -1,9 +1,20 @@
-from datetime import UTC, datetime
-from uuid import uuid4
+from datetime import UTC, date, datetime
+from uuid import UUID
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from sqlalchemy import select
+from sqlalchemy.orm import Session, selectinload
+
+from backend.database import get_db
+from backend.models import (
+    Activity as DbActivity,
+    ActivityCategory as DbActivityCategory,
+    Itinerary as DbItinerary,
+    Trip as DbTrip,
+    User as DbUser,
+)
 
 
 app = FastAPI(
@@ -26,6 +37,9 @@ app.add_middleware(
 )
 
 
+DEMO_USER_EMAIL = "demo@planpilotai.local"
+
+
 class ItineraryDay(BaseModel):
     day: int
     title: str
@@ -35,11 +49,11 @@ class ItineraryDay(BaseModel):
     travel_tip: str
 
 
-class Trip(BaseModel):
+class TripResponse(BaseModel):
     id: str
     destination: str
-    start_date: str | None = None
-    end_date: str | None = None
+    start_date: date | None = None
+    end_date: date | None = None
     budget: str
     travel_style: str
     interests: list[str]
@@ -49,8 +63,8 @@ class Trip(BaseModel):
 
 class TripCreate(BaseModel):
     destination: str = Field(..., min_length=2, examples=["Tokyo, Japan"])
-    start_date: str | None = Field(default=None, examples=["2026-06-20"])
-    end_date: str | None = Field(default=None, examples=["2026-06-26"])
+    start_date: date | None = Field(default=None, examples=["2026-06-20"])
+    end_date: date | None = Field(default=None, examples=["2026-06-26"])
     budget: str = Field(default="Balanced", examples=["Balanced"])
     travel_style: str = Field(default="Slow and scenic", examples=["Slow and scenic"])
     interests: list[str] = Field(default_factory=list, examples=[["Food", "Nature"]])
@@ -115,30 +129,133 @@ def build_preview_itinerary(request: ItineraryRequest) -> list[ItineraryDay]:
     return itinerary
 
 
-trips: dict[str, Trip] = {}
+def get_or_create_demo_user(db: Session) -> DbUser:
+    user = db.scalar(select(DbUser).where(DbUser.email == DEMO_USER_EMAIL))
+    if user is not None:
+        return user
 
-seed_trip = Trip(
-    id="trip_lisbon_preview",
-    destination="Lisbon, Portugal",
-    start_date="2026-06-20",
-    end_date="2026-06-24",
-    budget="Balanced",
-    travel_style="Slow and scenic",
-    interests=["Food", "Museums", "Nature"],
-    itinerary=build_preview_itinerary(
-        ItineraryRequest(
-            destination="Lisbon, Portugal",
-            start_date="2026-06-20",
-            end_date="2026-06-24",
-            budget="Balanced",
-            travel_style="Slow and scenic",
-            interests=["Food", "Museums", "Nature"],
-            days=3,
+    user = DbUser(
+        email=DEMO_USER_EMAIL,
+        full_name="PlanPilotAI Demo User",
+        auth_provider="local",
+    )
+    db.add(user)
+    db.flush()
+    return user
+
+
+def load_trip_or_404(db: Session, trip_id: str) -> DbTrip:
+    try:
+        trip_uuid = UUID(trip_id)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Trip '{trip_id}' was not found.",
+        ) from exc
+
+    trip = db.scalar(
+        select(DbTrip)
+        .where(DbTrip.id == trip_uuid)
+        .options(selectinload(DbTrip.itineraries).selectinload(DbItinerary.activities))
+    )
+    if trip is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Trip '{trip_id}' was not found.",
         )
-    ),
-    created_at=datetime.now(UTC),
-)
-trips[seed_trip.id] = seed_trip
+
+    return trip
+
+
+def db_trip_to_response(trip: DbTrip) -> TripResponse:
+    itinerary: list[ItineraryDay] = []
+
+    for day in trip.itineraries:
+        activities: list[str] = []
+        food_recommendations: list[str] = []
+
+        for activity in day.activities:
+            if activity.category == DbActivityCategory.FOOD:
+                food_recommendations.append(activity.title)
+            else:
+                activities.append(activity.title)
+
+        itinerary.append(
+            ItineraryDay(
+                day=day.day_number,
+                title=day.title,
+                summary=day.summary or "",
+                activities=activities,
+                food_recommendations=food_recommendations,
+                travel_tip=day.travel_tip or "",
+            )
+        )
+
+    return TripResponse(
+        id=str(trip.id),
+        destination=trip.destination,
+        start_date=trip.start_date,
+        end_date=trip.end_date,
+        budget=trip.budget,
+        travel_style=trip.travel_style,
+        interests=trip.interests,
+        itinerary=itinerary,
+        created_at=trip.created_at,
+    )
+
+
+def create_trip_record(db: Session, request: TripCreate, days: int) -> DbTrip:
+    user = get_or_create_demo_user(db)
+    itinerary_payload = request.model_dump(exclude={"days"})
+    itinerary_request = ItineraryRequest(**itinerary_payload, days=days)
+    preview_itinerary = build_preview_itinerary(itinerary_request)
+
+    trip = DbTrip(
+        user_id=user.id,
+        destination=request.destination,
+        start_date=request.start_date,
+        end_date=request.end_date,
+        budget=request.budget,
+        travel_style=request.travel_style,
+        interests=request.interests,
+    )
+
+    for day in preview_itinerary:
+        itinerary_day = DbItinerary(
+            day_number=day.day,
+            title=day.title,
+            summary=day.summary,
+            travel_tip=day.travel_tip,
+        )
+
+        for sort_order, activity_title in enumerate(day.activities, start=1):
+            itinerary_day.activities.append(
+                DbActivity(
+                    title=activity_title,
+                    category=DbActivityCategory.OTHER,
+                    sort_order=sort_order,
+                    source="mock",
+                )
+            )
+
+        for sort_order, food_title in enumerate(day.food_recommendations, start=len(day.activities) + 1):
+            itinerary_day.activities.append(
+                DbActivity(
+                    title=food_title,
+                    category=DbActivityCategory.FOOD,
+                    sort_order=sort_order,
+                    source="mock",
+                )
+            )
+
+        trip.itineraries.append(itinerary_day)
+
+    db.add(trip)
+    db.flush()
+    trip_id = trip.id
+    db.commit()
+
+    return load_trip_or_404(db, str(trip_id))
 
 
 @app.get("/", response_model=MessageResponse)
@@ -155,51 +272,31 @@ def health_check() -> HealthResponse:
     )
 
 
-@app.get("/api/trips", response_model=list[Trip])
-def list_trips() -> list[Trip]:
-    return list(trips.values())
+@app.get("/api/trips", response_model=list[TripResponse])
+def list_trips(db: Session = Depends(get_db)) -> list[TripResponse]:
+    trip_records = db.scalars(
+        select(DbTrip)
+        .options(selectinload(DbTrip.itineraries).selectinload(DbItinerary.activities))
+        .order_by(DbTrip.created_at.desc())
+    ).all()
+    return [db_trip_to_response(trip) for trip in trip_records]
 
 
-@app.post("/api/trips", response_model=Trip, status_code=status.HTTP_201_CREATED)
-def create_trip(request: TripCreate) -> Trip:
-    itinerary_request = ItineraryRequest(**request.model_dump(), days=3)
-    trip = Trip(
-        id=f"trip_{uuid4().hex[:8]}",
-        itinerary=build_preview_itinerary(itinerary_request),
-        created_at=datetime.now(UTC),
-        **request.model_dump(),
-    )
-    trips[trip.id] = trip
-    return trip
+@app.post("/api/trips", response_model=TripResponse, status_code=status.HTTP_201_CREATED)
+def create_trip(request: TripCreate, db: Session = Depends(get_db)) -> TripResponse:
+    trip = create_trip_record(db, request, days=3)
+    return db_trip_to_response(trip)
 
 
-@app.get("/api/trips/{trip_id}", response_model=Trip)
-def get_trip(trip_id: str) -> Trip:
-    trip = trips.get(trip_id)
-    if trip is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Trip '{trip_id}' was not found.",
-        )
-
-    return trip
+@app.get("/api/trips/{trip_id}", response_model=TripResponse)
+def get_trip(trip_id: str, db: Session = Depends(get_db)) -> TripResponse:
+    return db_trip_to_response(load_trip_or_404(db, trip_id))
 
 
-@app.post("/api/generate-itinerary", response_model=Trip)
-def generate_itinerary(request: ItineraryRequest) -> Trip:
-    trip = Trip(
-        id=f"trip_{uuid4().hex[:8]}",
-        destination=request.destination,
-        start_date=request.start_date,
-        end_date=request.end_date,
-        budget=request.budget,
-        travel_style=request.travel_style,
-        interests=request.interests,
-        itinerary=build_preview_itinerary(request),
-        created_at=datetime.now(UTC),
-    )
-    trips[trip.id] = trip
-    return trip
+@app.post("/api/generate-itinerary", response_model=TripResponse)
+def generate_itinerary(request: ItineraryRequest, db: Session = Depends(get_db)) -> TripResponse:
+    trip = create_trip_record(db, request, days=request.days)
+    return db_trip_to_response(trip)
 
 
 @app.get("/api/destinations")

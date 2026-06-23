@@ -6,6 +6,8 @@ Day 3 added the starter API routes and mock itinerary generator.
 
 Day 5 adds PostgreSQL database support with SQLAlchemy and Alembic.
 
+Day 6 saves trip requests, generated itinerary days, and activities in PostgreSQL.
+
 ## Setup
 
 From the project root:
@@ -34,7 +36,7 @@ Open the API docs at [http://localhost:8000/docs](http://localhost:8000/docs).
 - `GET /api/destinations`
 - `GET /api/travel-styles`
 
-The itinerary generator currently returns structured mock data. Later it can call an AI provider and save trips to the database.
+The itinerary generator currently returns structured mock data and saves each request to the database. Later it can call an AI provider before saving the generated plan.
 
 ## Database
 
@@ -71,3 +73,5 @@ Main tables:
 The schema is defined in [models.py](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/backend/models.py).
 
 The initial migration is in [20260618_0001_create_travel_planning_schema.py](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/backend/alembic/versions/20260618_0001_create_travel_planning_schema.py).
+
+Day 6 adds the trip-level `interests` column in [20260623_0002_add_trip_interests.py](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/backend/alembic/versions/20260623_0002_add_trip_interests.py).

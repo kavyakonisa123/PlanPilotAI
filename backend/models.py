@@ -61,6 +61,7 @@ class Trip(Base):
     end_date: Mapped[date | None] = mapped_column(Date)
     budget: Mapped[str] = mapped_column(String(80), default="Balanced", nullable=False)
     travel_style: Mapped[str] = mapped_column(String(120), default="Slow and scenic", nullable=False)
+    interests: Mapped[list[str]] = mapped_column(JSONB, default=list, nullable=False)
     status: Mapped[TripStatus] = mapped_column(
         SqlEnum(
             TripStatus,

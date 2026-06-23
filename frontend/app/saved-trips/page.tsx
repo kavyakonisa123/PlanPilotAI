@@ -31,7 +31,7 @@ export default function SavedTripsPage() {
           Trips returned by the backend.
         </h1>
         <p className="mt-4 text-ink/70">
-          This page calls `GET /api/trips` and displays the trips currently stored in FastAPI memory.
+          This page calls `GET /api/trips` and displays the trips saved in PostgreSQL.
         </p>
       </div>
 
