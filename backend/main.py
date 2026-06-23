@@ -1,4 +1,5 @@
 from datetime import UTC, date, datetime
+from os import getenv
 from uuid import UUID
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -23,14 +24,23 @@ app = FastAPI(
     version="0.1.0",
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+
+def get_allowed_origins() -> list[str]:
+    configured_origins = getenv("BACKEND_CORS_ORIGINS")
+    if configured_origins:
+        return [origin.strip() for origin in configured_origins.split(",") if origin.strip()]
+
+    return [
         "http://localhost:2000",
         "http://127.0.0.1:2000",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-    ],
+    ]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=get_allowed_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

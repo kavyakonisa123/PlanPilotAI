@@ -1,12 +1,7 @@
-# PlanPilotAI FastAPI Backend
+# PlanPilotAI Backend
 
 The backend is a FastAPI API for generating and saving travel itineraries.
-
-Day 3 added the starter API routes and mock itinerary generator.
-
-Day 5 adds PostgreSQL database support with SQLAlchemy and Alembic.
-
-Day 6 saves trip requests, generated itinerary days, and activities in PostgreSQL.
+It validates trip requests, builds itinerary previews, and saves trips in PostgreSQL with SQLAlchemy.
 
 ## Setup
 
@@ -21,6 +16,7 @@ pip install -r backend/requirements.txt
 ## Run
 
 ```bash
+source backend/.venv/bin/activate
 uvicorn backend.main:app --reload --port 8000
 ```
 
@@ -36,7 +32,7 @@ Open the API docs at [http://localhost:8000/docs](http://localhost:8000/docs).
 - `GET /api/destinations`
 - `GET /api/travel-styles`
 
-The itinerary generator currently returns structured mock data and saves each request to the database. Later it can call an AI provider before saving the generated plan.
+`POST /api/generate-itinerary` returns a structured itinerary preview and saves the request, itinerary days, and activities to the database.
 
 ## Database
 
@@ -46,6 +42,12 @@ Set the database URL:
 
 ```bash
 export DATABASE_URL="postgresql+psycopg://postgres:YOUR_PASSWORD@YOUR_HOST:5432/postgres"
+```
+
+Configure CORS for deployed frontends with a comma-separated list:
+
+```bash
+export BACKEND_CORS_ORIGINS="https://YOUR_FRONTEND_DOMAIN.com"
 ```
 
 Run migrations:

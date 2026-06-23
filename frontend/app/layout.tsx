@@ -12,7 +12,7 @@ const navigation = [
 
 export const metadata: Metadata = {
   title: "PlanPilot AI",
-  description: "AI-powered travel planning app built with Next.js, TypeScript, and Tailwind CSS.",
+  description: "Full-stack travel planning app built with Next.js, FastAPI, PostgreSQL, and Tailwind CSS.",
 };
 
 export default function RootLayout({
@@ -47,7 +47,7 @@ export default function RootLayout({
         <main>{children}</main>
         <footer className="border-t border-ink/10 bg-white/60">
           <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-8 text-sm text-ink/65 sm:flex-row sm:items-center sm:justify-between">
-            <p>PlanPilot AI - Travel Planner.</p>
+            <p>PlanPilot AI - Full-stack travel planner.</p>
           </div>
         </footer>
       </body>

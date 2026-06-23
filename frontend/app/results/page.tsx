@@ -16,11 +16,11 @@ export default function ResultsPage() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-6xl px-5 py-12">
+    <section className="page-section">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-moss">Results</p>
-          <h1 className="mt-3 text-3xl font-black text-ink sm:text-4xl">
+          <p className="section-kicker text-moss">Results</p>
+          <h1 className="section-title">
             {trip ? `${trip.destination} itinerary preview` : "AI itinerary preview"}
           </h1>
           {trip ? (
@@ -29,7 +29,7 @@ export default function ResultsPage() {
             </p>
           ) : null}
         </div>
-        <Link href="/trip-planner" className="w-fit rounded-full bg-coral px-5 py-3 font-bold text-white shadow-sm">
+        <Link href="/trip-planner" className="accent-button w-fit">
           Plan Another Trip
         </Link>
       </div>
@@ -37,7 +37,7 @@ export default function ResultsPage() {
       {trip ? (
         <div className="grid gap-5">
           {trip.itinerary.map((item) => (
-            <article key={item.day} className="rounded-3xl border border-ink/10 bg-white p-6 shadow-sm">
+            <article key={item.day} className="surface-card">
               <p className="text-sm font-black text-ocean">Day {item.day}</p>
               <h2 className="mt-2 text-2xl font-black text-ink">{item.title}</h2>
               <p className="mt-3 max-w-3xl leading-7 text-ink/70">{item.summary}</p>
@@ -67,14 +67,14 @@ export default function ResultsPage() {
           ))}
         </div>
       ) : (
-        <div className="rounded-3xl border border-ink/10 bg-white p-6 shadow-sm">
+        <div className="surface-card">
           <h2 className="text-2xl font-black text-ink">No generated trip yet.</h2>
           <p className="mt-3 max-w-2xl leading-7 text-ink/70">
             Go to the trip planner, submit the form, and this page will show the itinerary returned by FastAPI.
           </p>
           <Link
             href="/trip-planner"
-            className="mt-6 inline-flex rounded-full bg-ink px-5 py-3 font-bold text-white"
+            className="primary-button mt-6"
           >
             Open Trip Planner
           </Link>

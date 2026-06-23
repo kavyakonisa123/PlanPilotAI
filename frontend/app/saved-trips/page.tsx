@@ -24,13 +24,11 @@ export default function SavedTripsPage() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-6xl px-5 py-12">
+    <section className="page-section">
       <div className="mb-8 max-w-3xl">
-        <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">Saved Trips</p>
-        <h1 className="mt-3 text-3xl font-black text-ink sm:text-4xl">
-          Trips returned by the backend.
-        </h1>
-        <p className="mt-4 text-ink/70">
+        <p className="section-kicker text-coral">Saved Trips</p>
+        <h1 className="section-title">Trips saved by the backend.</h1>
+        <p className="section-copy">
           This page calls `GET /api/trips` and displays the trips saved in PostgreSQL.
         </p>
       </div>
@@ -38,13 +36,13 @@ export default function SavedTripsPage() {
       {isLoading ? <p className="font-semibold text-ink/70">Loading trips...</p> : null}
 
       {error ? (
-        <p className="rounded-2xl bg-coral/10 px-4 py-3 text-sm font-semibold text-coral">{error}</p>
+        <p className="status-error">{error}</p>
       ) : null}
 
-      {!isLoading && !error ? (
+      {!isLoading && !error && trips.length > 0 ? (
         <div className="grid gap-5 md:grid-cols-3">
           {trips.map((trip) => (
-            <article key={trip.id} className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-ink/10">
+            <article key={trip.id} className="soft-card">
               <div className="mb-8 flex items-center justify-between gap-4">
                 <span className="rounded-full bg-skywash px-3 py-1 text-sm font-bold text-ocean">
                   {trip.budget}
@@ -60,6 +58,15 @@ export default function SavedTripsPage() {
               </p>
             </article>
           ))}
+        </div>
+      ) : null}
+
+      {!isLoading && !error && trips.length === 0 ? (
+        <div className="surface-card">
+          <h2 className="text-2xl font-black text-ink">No saved trips yet.</h2>
+          <p className="mt-3 max-w-2xl leading-7 text-ink/70">
+            Generate an itinerary from the trip planner, and it will appear here after the backend saves it.
+          </p>
         </div>
       ) : null}
     </section>

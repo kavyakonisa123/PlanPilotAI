@@ -35,6 +35,11 @@ export default function TripPlannerPage() {
       return;
     }
 
+    if (startDate && endDate && endDate < startDate) {
+      setError("End date must be the same as or later than the start date.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -58,14 +63,12 @@ export default function TripPlannerPage() {
   }
 
   return (
-    <section className="mx-auto max-w-6xl px-5 py-12">
+    <section className="page-section">
       <div className="mb-8 max-w-3xl">
-        <p className="text-sm font-bold uppercase tracking-[0.2em] text-ocean">Trip Planner</p>
-        <h1 className="mt-3 text-3xl font-black text-ink sm:text-4xl">
-          Generate an itinerary from the FastAPI backend.
-        </h1>
-        <p className="mt-4 text-ink/70">
-          Enter trip details, submit the form, and the Next.js frontend will call the backend API.
+        <p className="section-kicker text-ocean">Trip Planner</p>
+        <h1 className="section-title">Generate and save an itinerary preview.</h1>
+        <p className="section-copy">
+          Enter trip details, submit the form, and the backend will save the request in PostgreSQL.
         </p>
       </div>
 
@@ -75,7 +78,7 @@ export default function TripPlannerPage() {
           <input
             value={destination}
             onChange={(event) => setDestination(event.target.value)}
-            className="rounded-2xl border border-ink/15 px-4 py-3 font-normal outline-none transition focus:border-ocean focus:ring-4 focus:ring-ocean/10"
+            className="form-control"
             placeholder="Tokyo, Japan"
           />
         </label>
@@ -85,7 +88,7 @@ export default function TripPlannerPage() {
             type="date"
             value={startDate}
             onChange={(event) => setStartDate(event.target.value)}
-            className="rounded-2xl border border-ink/15 px-4 py-3 font-normal outline-none transition focus:border-ocean focus:ring-4 focus:ring-ocean/10"
+            className="form-control"
           />
         </label>
         <label className="grid gap-2 text-sm font-bold text-ink">
@@ -94,7 +97,7 @@ export default function TripPlannerPage() {
             type="date"
             value={endDate}
             onChange={(event) => setEndDate(event.target.value)}
-            className="rounded-2xl border border-ink/15 px-4 py-3 font-normal outline-none transition focus:border-ocean focus:ring-4 focus:ring-ocean/10"
+            className="form-control"
           />
         </label>
         <label className="grid gap-2 text-sm font-bold text-ink">
@@ -102,7 +105,7 @@ export default function TripPlannerPage() {
           <select
             value={budget}
             onChange={(event) => setBudget(event.target.value)}
-            className="rounded-2xl border border-ink/15 px-4 py-3 font-normal outline-none transition focus:border-ocean focus:ring-4 focus:ring-ocean/10"
+            className="form-control"
           >
             <option>Budget-friendly</option>
             <option>Balanced</option>
@@ -114,7 +117,7 @@ export default function TripPlannerPage() {
           <select
             value={travelStyle}
             onChange={(event) => setTravelStyle(event.target.value)}
-            className="rounded-2xl border border-ink/15 px-4 py-3 font-normal outline-none transition focus:border-ocean focus:ring-4 focus:ring-ocean/10"
+            className="form-control"
           >
             <option>Slow and scenic</option>
             <option>Packed and energetic</option>
@@ -146,18 +149,18 @@ export default function TripPlannerPage() {
             max="14"
             value={days}
             onChange={(event) => setDays(Number(event.target.value))}
-            className="max-w-40 rounded-2xl border border-ink/15 px-4 py-3 font-normal outline-none transition focus:border-ocean focus:ring-4 focus:ring-ocean/10"
+            className="form-control max-w-40"
           />
         </label>
         {error ? (
-          <p className="rounded-2xl bg-coral/10 px-4 py-3 text-sm font-semibold text-coral lg:col-span-2">
+          <p className="status-error lg:col-span-2">
             {error}
           </p>
         ) : null}
         <div className="lg:col-span-2">
           <button
             disabled={isSubmitting}
-            className="rounded-full bg-ink px-6 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:bg-ocean disabled:cursor-not-allowed disabled:bg-ink/45"
+            className="primary-button px-6"
           >
             {isSubmitting ? "Generating..." : "Generate Preview"}
           </button>

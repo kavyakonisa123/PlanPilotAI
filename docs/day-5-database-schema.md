@@ -1,6 +1,6 @@
-# Day 5 Database Schema
+# Day 5 and Day 6 Database Schema
 
-Day 5 adds the first real database design for PlanPilotAI.
+Day 5 adds the first real database design for PlanPilotAI. Day 6 adds trip request persistence through the FastAPI routes.
 
 Recommended hosted database: Supabase Postgres.
 
@@ -40,6 +40,7 @@ Important fields:
 - `start_date` and `end_date`: optional travel dates
 - `budget`: saved budget preference for this trip
 - `travel_style`: saved travel style for this trip
+- `interests`: JSON list of interests submitted for this trip
 - `status`: draft, planned, or archived
 
 A user can have many trips.
