@@ -11,7 +11,7 @@ Why Supabase:
 - It has a dashboard for inspecting tables while learning.
 - It works well with a FastAPI backend through a normal database URL.
 
-The backend code still uses SQLAlchemy and Alembic, so the same schema can also run on local PostgreSQL, Railway, Render, or any other Postgres host.
+The backend code still uses SQLAlchemy and Alembic, so the same schema can also run on local PostgreSQL, Railway, Supabase, or any other Postgres host.
 
 ## Tables
 

@@ -54,14 +54,15 @@ PlanPilotAI simplifies this process by allowing users to enter basic travel deta
 
 - Git
 - GitHub
+- GitHub Actions
 - VS Code
 - Postman
 - Markdown
 
 ### Deployment
 
-- Vercel or Netlify for frontend
-- Render, Railway, or AWS for backend
+- Vercel for frontend
+- Railway for backend
 - Supabase for hosted PostgreSQL
 
 ---
@@ -206,6 +207,39 @@ Open [http://localhost:8000/docs](http://localhost:8000/docs) to view the API do
 
 ---
 
+## Day 7 Deployment Workflow
+
+Day 7 adds the first deployment setup for the full-stack app.
+
+Included deployment files:
+
+- GitHub Actions workflow in [.github/workflows/ci.yml](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/.github/workflows/ci.yml)
+- Vercel project config in [frontend/vercel.json](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/frontend/vercel.json)
+- Railway config in [railway.json](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/railway.json)
+- Root Python dependency pointer in [requirements.txt](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/requirements.txt)
+- Deployment checklist in [docs/deployment.md](/Users/kavyakonisa/Desktop/TravelPlanner/PlanPilotAI/docs/deployment.md)
+
+GitHub Actions runs frontend lint/build checks and backend compile checks on pull requests and pushes to `main`.
+
+Production environment variables:
+
+- `NEXT_PUBLIC_API_URL` in Vercel should point to the deployed Railway backend URL.
+- `DATABASE_URL` in Railway should point to the Supabase PostgreSQL database.
+- `BACKEND_CORS_ORIGINS` in Railway should include the deployed Vercel frontend URL.
+
+Optional GitHub Actions deployment secrets:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+Public project links:
+
+- Frontend: `https://your-vercel-app.vercel.app`
+- Backend health check: `https://your-railway-backend.up.railway.app/health`
+
+---
+
 ## Learning Goals
 
 By building this project, I aim to learn and practice:
@@ -241,4 +275,4 @@ By building this project, I aim to learn and practice:
 
 ## Project Status
 
-Current status: Day 6 - trip requests are saved to PostgreSQL with FastAPI, SQLAlchemy, and Alembic.
+Current status: Day 7 - deployment config and GitHub Actions workflow are ready for Vercel, Railway, and Supabase.

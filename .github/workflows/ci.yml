@@ -53,8 +53,8 @@ jobs:
       - name: Compile backend
         run: python -m compileall backend/__init__.py backend/database.py backend/main.py backend/models.py backend/alembic
 
-  deploy:
-    name: Deployment hooks
+  deploy-frontend:
+    name: Frontend deployment hook
     runs-on: ubuntu-latest
     needs:
       - frontend
@@ -64,7 +64,6 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -74,10 +73,6 @@ jobs:
         working-directory: frontend
         run: npx vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"
 
-      - name: Trigger backend deploy on Render
-        if: env.RENDER_DEPLOY_HOOK_URL != ''
-        run: curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL"
-
       - name: Skip note
-        if: env.VERCEL_TOKEN == '' || env.VERCEL_ORG_ID == '' || env.VERCEL_PROJECT_ID == '' || env.RENDER_DEPLOY_HOOK_URL == ''
-        run: echo "Deployment secrets are not fully configured, so one or more deploy steps were skipped."
+        if: env.VERCEL_TOKEN == '' || env.VERCEL_ORG_ID == '' || env.VERCEL_PROJECT_ID == ''
+        run: echo "Vercel deployment secrets are not fully configured, so the frontend deploy step was skipped."
