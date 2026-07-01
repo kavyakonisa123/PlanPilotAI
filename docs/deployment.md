@@ -38,7 +38,11 @@ DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 BACKEND_CORS_ORIGINS=https://your-vercel-app.vercel.app
 ```
 
-6. Confirm the health check works:
+`DATABASE_URL` must be the Supabase Postgres connection string. If this variable is missing, Railway will fall back to the local development database URL and the deploy logs will show a failed connection to `127.0.0.1:5432`.
+
+6. Redeploy the Railway service after saving environment variables.
+
+7. Confirm the health check works:
 
 ```bash
 curl https://your-railway-backend.up.railway.app/health

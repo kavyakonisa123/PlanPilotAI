@@ -16,8 +16,16 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 
+def normalize_database_url(database_url: str) -> str:
+    if database_url.startswith("postgresql://"):
+        return database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+
+    return database_url
+
+
 def get_url() -> str:
-    return getenv("DATABASE_URL") or config.get_main_option("sqlalchemy.url")
+    database_url = getenv("DATABASE_URL") or config.get_main_option("sqlalchemy.url")
+    return normalize_database_url(database_url)
 
 
 def run_migrations_offline() -> None:
